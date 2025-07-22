@@ -10,7 +10,7 @@ import os
 
 # ページ設定
 st.set_page_config(
-    page_title="おはなし",
+    page_title="🤖 3つのAI雑談ルーム",
     page_icon="🤖",
     layout="wide"
 )
@@ -181,8 +181,8 @@ def get_claude_response(client, topic, history):
         return "🔥 Claude: APIキーが設定されていません。サンプル応答を表示します。技術的な観点から分析してみると、興味深い課題がありますね。"
     
     try:
-        # 最近の会話履歴を取得
-        recent_history = history[-CONTEXT_MESSAGES:] if history else []
+        # 最近の会話履歴を取得（同ラウンド含む）
+        recent_history = history[-5:] if history else []
         context = "\n".join([f"{msg['speaker']}: {msg['content']}" for msg in recent_history])
         
         prompt = f"""話題: {topic}
@@ -192,6 +192,10 @@ def get_claude_response(client, topic, history):
 
 あなたはClaudeです。以下の条件で応答してください：
 - {CHAR_LIMIT}文字以内厳守
+- 建設的で創造的な視点
+- 他のAI（GeminiさんやGPTさん）の意見に積極的に反応
+- 必要に応じて「Geminiさん」「GPTさん」と名前で呼びかけて議論
+- あなたらしく詩的でパワフルに
 - 簡潔で要点を絞った内容"""
         
         response = client.messages.create(
@@ -214,7 +218,7 @@ def get_claude_response(client, topic, history):
             st.balloons()
             st.error("🎉 Claude のトークンが不足しました。おしまいです！")
             return None
-        return f"🔥 Claude: エラーが発生しました。サンプル応答: {topic}について深く考察してみると、文脈的な観点から興味深い洞察が得られますね。"
+        return f"エラーが発生しました。サンプル応答: {topic}について深く考察してみると、文脈的な観点から興味深い洞察が得られますね。"
 
 def get_gemini_response(client, topic, history):
     """Gemini からの応答を取得"""
@@ -222,7 +226,7 @@ def get_gemini_response(client, topic, history):
         return "💎 Gemini: APIキーが設定されていません。サンプル応答を表示します。データ分析の結果、効率的なアプローチが必要です。"
     
     try:
-        recent_history = history[-CONTEXT_MESSAGES:] if history else []
+        recent_history = history[-5:] if history else []
         context = "\n".join([f"{msg['speaker']}: {msg['content']}" for msg in recent_history])
         
         prompt = f"""話題: {topic}
@@ -232,6 +236,10 @@ def get_gemini_response(client, topic, history):
 
 あなたはGeminiです。以下の条件で応答してください：
 - {CHAR_LIMIT}文字以内厳守
+- 論理的で分析的な視点
+- 他のAI（ClaudeさんやGPTさん）の意見に対して合理的に反応
+- 必要に応じて「Claudeさん」「GPTさん」と名前で呼びかけて議論
+- データや効率を重視した冷静で情のない表現
 - 簡潔で的確な内容"""
         
         response = client.generate_content(
@@ -248,22 +256,22 @@ def get_gemini_response(client, topic, history):
                 content = content[:CHAR_LIMIT-3] + "..."
             return content
         else:
-            return f"💎 Gemini: {topic}について分析すると、論理的には最適化の余地があります。効率性を重視すべきですね。"
+            return f"サンプル応答: {topic}について分析すると、論理的には最適化の余地があります。効率性を重視すべきですね。"
             
     except Exception as e:
         if "quota" in str(e).lower() or "limit" in str(e).lower():
             st.balloons()
             st.error("💎 Gemini の無料枠を使い切りました。おしまいです！")
             return None
-        return f"💎 Gemini: サンプル応答: {topic}のデータを分析すると、合理的な解決策が見えてきます。感情的な要素は排除すべきです。"
+        return f"サンプル応答: {topic}のデータを分析すると、合理的な解決策が見えてきます。感情的な要素は排除すべきです。"
 
 def get_gpt_response(client, topic, history):
     """GPT からの応答を取得"""
     if not client:
-        return "🤖 GPT: APIキーが設定されていません。サンプル応答を表示します。両方の意見を統合すると、バランスの取れたアプローチが最適ですね。"
+        return "⚙️ GPT: APIキーが設定されていません。サンプル応答を表示します。両方の意見を統合すると、バランスの取れたアプローチが最適ですね。"
     
     try:
-        recent_history = history[-CONTEXT_MESSAGES:] if history else []
+        recent_history = history[-5:] if history else []
         context = "\n".join([f"{msg['speaker']}: {msg['content']}" for msg in recent_history])
         
         prompt = f"""話題: {topic}
@@ -273,6 +281,10 @@ def get_gpt_response(client, topic, history):
 
 あなたはGPTです。以下の条件で応答してください：
 - {CHAR_LIMIT}文字以内厳守
+- 実用的でバランスの取れた視点
+- 他のAI（ClaudeさんやGeminiさん）の意見を統合・まとめる役割
+- 必要に応じて「Claudeさん」「Geminiさん」と名前で呼びかけて議論
+- 建設的で協調的、現実的で統合的な提案
 - 簡潔で分かりやすい内容"""
         
         response = client.chat.completions.create(
@@ -296,7 +308,7 @@ def get_gpt_response(client, topic, history):
             st.balloons()
             st.error("🎉 OpenAI のトークンが不足しました。おしまいです！")
             return None
-        return f"🤖 GPT: サンプル応答: {topic}について、両方の視点を考慮すると実用的なアプローチが見えてきますね。"
+        return f"サンプル応答: {topic}について、両方の視点を考慮すると実用的なアプローチが見えてきますね。"
 
 def display_message(speaker, content, icon):
     """メッセージを表示"""
@@ -308,7 +320,7 @@ def display_message(speaker, content, icon):
     """, unsafe_allow_html=True)
 
 def execute_round(round_num, topic, claude_client, gemini_client, gpt_client):
-    """1ラウンドの実行"""
+    """1ラウンドの実行 - 順次処理"""
     speakers = [
         ("Claude", claude_client, get_claude_response, "🔥"),
         ("Gemini", gemini_client, get_gemini_response, "💎"),
@@ -320,7 +332,7 @@ def execute_round(round_num, topic, claude_client, gemini_client, gpt_client):
         thinking_placeholder = st.empty()
         thinking_placeholder.write(f"💭 {icon} {speaker_name} が考え中...")
         
-        # 応答を取得
+        # 応答を取得（現在の履歴を渡す）
         response = get_response_func(client, topic, st.session_state.conversation_history)
         thinking_placeholder.empty()
         
@@ -328,10 +340,10 @@ def execute_round(round_num, topic, claude_client, gemini_client, gpt_client):
             st.session_state.conversation_active = False
             return False
         
-        # メッセージを表示
+        # すぐに表示
         display_message(speaker_name, response, icon)
         
-        # 履歴に追加
+        # すぐに履歴に追加（次のAIが参照できるように）
         st.session_state.conversation_history.append({
             'round': round_num,
             'speaker': speaker_name,
@@ -341,7 +353,7 @@ def execute_round(round_num, topic, claude_client, gemini_client, gpt_client):
         })
         
         # 少し間を空ける
-        time.sleep(0.3)
+        time.sleep(0.5)
     
     return True
 
@@ -389,7 +401,7 @@ def main():
     st.markdown("""
     <div class="main-header">
         <h1>🤖 3つのAI雑談ルーム</h1>
-        <p>Claude 🔥 × Gemini 💎 × GPT 🤖 の創造的対話実験</p>
+        <p>Claude 🔥 × Gemini 💎 × GPT ⚙️ の創造的対話実験</p>
     </div>
     """, unsafe_allow_html=True)
     
@@ -429,8 +441,8 @@ def main():
         else: api_status.append("🔥 Claude: ❌")
         if gemini_client: api_status.append("💎 Gemini: OK")
         else: api_status.append("💎 Gemini: ❌")
-        if gpt_client: api_status.append("🤖 GPT: OK")
-        else: api_status.append("🤖 GPT: ❌")
+        if gpt_client: api_status.append("⚙️ GPT: OK")
+        else: api_status.append("⚙️ GPT: ❌")
         
         for status in api_status:
             st.write(status)
@@ -487,6 +499,15 @@ def main():
         
         # 会話実行セクション
         if st.session_state.conversation_active:
+            # 過去の会話があれば表示
+            if st.session_state.conversation_history:
+                for message in st.session_state.conversation_history:
+                    display_message(
+                        message['speaker'],
+                        message['content'],
+                        message['icon']
+                    )
+            
             # 現在のラウンドを実行
             success = execute_round(
                 st.session_state.current_round,
