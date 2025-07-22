@@ -10,7 +10,7 @@ import os
 
 # ページ設定
 st.set_page_config(
-    page_title="🤖 3つのAI雑談ルーム",
+    page_title="AI雑談",
     page_icon="🤖",
     layout="wide"
 )
