@@ -10,7 +10,7 @@ import os
 
 # ページ設定
 st.set_page_config(
-    page_title="AI雑談",
+    page_title="おはなし",
     page_icon="🤖",
     layout="wide"
 )
@@ -28,55 +28,33 @@ st.markdown("""
     }
     
     .claude-msg {
-        background: linear-gradient(135deg, #ffe4cc, #ffcc99);
+        background: #ffe4cc;
         color: #8b4513;
-        padding: 15px;
-        border-radius: 15px;
-        margin: 10px 0;
+        padding: 8px 12px;
+        border-radius: 8px;
+        margin: 5px 0;
         margin-right: 20%;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        border-left: 4px solid #ff8c42;
+        border-left: 3px solid #ff8c42;
     }
     
     .gemini-msg {
-        background: linear-gradient(135deg, #e6f3ff, #b3d9ff);
+        background: #e6f3ff;
         color: #2c5aa0;
-        padding: 15px;
-        border-radius: 15px;
-        margin: 10px 0;
+        padding: 8px 12px;
+        border-radius: 8px;
+        margin: 5px 0;
         margin-right: 20%;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        border-left: 4px solid #4285f4;
+        border-left: 3px solid #4285f4;
     }
     
     .gpt-msg {
-        background: linear-gradient(135deg, #f5f5f5, #e0e0e0);
+        background: #f5f5f5;
         color: #424242;
-        padding: 15px;
-        border-radius: 15px;
-        margin: 10px 0;
+        padding: 8px 12px;
+        border-radius: 8px;
+        margin: 5px 0;
         margin-right: 20%;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        border-left: 4px solid #757575;
-    }
-    
-    .ai-name {
-        font-weight: bold;
-        font-size: 14px;
-        opacity: 0.9;
-        margin-bottom: 8px;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-    
-    .round-header {
-        background: linear-gradient(45deg, #667eea, #764ba2);
-        color: white;
-        padding: 10px 20px;
-        border-radius: 20px;
-        text-align: center;
-        margin: 20px 0 15px 0;
-        font-weight: bold;
+        border-left: 3px solid #757575;
     }
     
     .topic-display {
@@ -336,23 +314,16 @@ def display_message(speaker, content, icon):
     css_class = f"{speaker.lower()}-msg"
     st.markdown(f"""
     <div class="{css_class}">
-        <div class="ai-name">{icon} {speaker}</div>
-        <div>{content}</div>
+        {icon} {speaker}: {content}
     </div>
     """, unsafe_allow_html=True)
 
 def execute_round(round_num, topic, claude_client, gemini_client, gpt_client):
     """1ラウンドの実行"""
-    st.markdown(f"""
-    <div class="round-header">
-        第{round_num}順
-    </div>
-    """, unsafe_allow_html=True)
-    
     speakers = [
         ("Claude", claude_client, get_claude_response, "🔥"),
         ("Gemini", gemini_client, get_gemini_response, "💎"),
-        ("GPT", gpt_client, get_gpt_response, "🤖")
+        ("GPT", gpt_client, get_gpt_response, "⚙️")
     ]
     
     for speaker_name, client, get_response_func, icon in speakers:
@@ -573,16 +544,7 @@ def main():
         elif st.session_state.conversation_history:
             st.subheader("📋 会話履歴")
             
-            current_round = 0
             for message in st.session_state.conversation_history:
-                if message['round'] != current_round:
-                    current_round = message['round']
-                    st.markdown(f"""
-                    <div class="round-header">
-                        第{current_round}順
-                    </div>
-                    """, unsafe_allow_html=True)
-                
                 display_message(
                     message['speaker'],
                     message['content'],
