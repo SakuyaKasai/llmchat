@@ -192,9 +192,6 @@ def get_claude_response(client, topic, history):
 
 あなたはClaudeです。以下の条件で応答してください：
 - {CHAR_LIMIT}文字以内厳守
-- 建設的で創造的な視点
-- 他のAIの意見に対して自然に反応
-- あなたらしく詩的でパワフルに
 - 簡潔で要点を絞った内容"""
         
         response = client.messages.create(
@@ -235,10 +232,6 @@ def get_gemini_response(client, topic, history):
 
 あなたはGeminiです。以下の条件で応答してください：
 - {CHAR_LIMIT}文字以内厳守
-- 論理的で分析的な視点
-- データや効率を重視
-- 他のAIの意見に対して合理的に反応
-- あなたらしく冷静で情のない表現
 - 簡潔で的確な内容"""
         
         response = client.generate_content(
@@ -280,10 +273,6 @@ def get_gpt_response(client, topic, history):
 
 あなたはGPTです。以下の条件で応答してください：
 - {CHAR_LIMIT}文字以内厳守
-- 実用的でバランスの取れた視点
-- 他のAIの意見をまとめる役割
-- 建設的で協調的な提案
-- あなたらしく現実的で統合的に
 - 簡潔で分かりやすい内容"""
         
         response = client.chat.completions.create(
